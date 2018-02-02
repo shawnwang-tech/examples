@@ -4,6 +4,7 @@ Trains a simple cnn on the fashion mnist dataset.
 Deigned to show how to do a simple wandb integration with keras.
 """
 
+import argparse
 from keras.datasets import fashion_mnist
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Dropout, Dense, Flatten
@@ -14,16 +15,21 @@ from keras.callbacks import TensorBoard
 import wandb
 from wandb.wandb_keras import WandbKerasCallback
 
+parser = argparse.ArgumentParser()
+parser.description = 'Train an example model'
+parser.add_argument('--dropout', type=int, default=0.2)
+parser.add_argument('--hidden_layer_size', type=int, default=128)
+parser.add_argument('--layer_1_size', type=int, default=16)
+parser.add_argument('--layer_2_size', type=int, default=32)
+parser.add_argument('--learn_rate', type=int, default=0.01)
+parser.add_argument('--decay', type=int, default=1e-6)
+parser.add_argument('--momentum', type=int, default=0.9)
+parser.add_argument('--epochs', type=int, default=25)
+args = parser.parse_args()
+
 run = wandb.init()
 config = run.config
-config.dropout = 0.2
-config.hidden_layer_size = 128
-config.layer_1_size  = 16
-config.layer_2_size = 32
-config.learn_rate = 0.01
-config.decay = 1e-6
-config.momentum = 0.9
-config.epochs = 25
+config.update(args)
 
 (X_train, y_train), (X_test, y_test) = fashion_mnist.load_data()
 
