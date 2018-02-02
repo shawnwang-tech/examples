@@ -17,13 +17,13 @@ from wandb.wandb_keras import WandbKerasCallback
 
 parser = argparse.ArgumentParser()
 parser.description = 'Train an example model'
-parser.add_argument('--dropout', type=int, default=0.2)
+parser.add_argument('--dropout', type=float, default=0.2)
 parser.add_argument('--hidden_layer_size', type=int, default=128)
 parser.add_argument('--layer_1_size', type=int, default=16)
 parser.add_argument('--layer_2_size', type=int, default=32)
-parser.add_argument('--learn_rate', type=int, default=0.01)
-parser.add_argument('--decay', type=int, default=1e-6)
-parser.add_argument('--momentum', type=int, default=0.9)
+parser.add_argument('--learn_rate', type=float, default=0.01)
+parser.add_argument('--decay', type=float, default=1e-6)
+parser.add_argument('--momentum', type=float, default=0.9)
 parser.add_argument('--epochs', type=int, default=25)
 args = parser.parse_args()
 
