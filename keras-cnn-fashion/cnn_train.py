@@ -36,136 +36,137 @@ MOMENTUM = 0.9
 img_width=28
 img_height=28
 
+
 def train_cnn(args):
-  # initialize wandb logging to your project
-  wandb.init(project=args.project_name)
-  # log all experimental args to wandb
-  wandb.config.update(args)
+    # initialize wandb logging to your project
+    wandb.init(project=args.project_name)
+    # log all experimental args to wandb
+    wandb.config.update(args)
 
-  # load and prepare data
-  (X_train, y_train), (X_test, y_test) = fashion_mnist.load_data()
-  labels=["T-shirt/top","Trouser","Pullover","Dress","Coat",
-        "Sandal","Shirt","Sneaker","Bag","Ankle boot"]
+    # load and prepare data
+    (X_train, y_train), (X_test, y_test) = fashion_mnist.load_data()
+    labels=["T-shirt/top", "Trouser", "Pullover", "Dress", "Coat",
+            "Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot"]
 
-  X_train = X_train.astype('float32')
-  X_train /= 255.
-  X_test = X_test.astype('float32')
-  X_test /= 255.
+    X_train = X_train.astype('float32')
+    X_train /= 255.
+    X_test = X_test.astype('float32')
+    X_test /= 255.
 
-  # reshape input data
-  X_train = X_train.reshape(X_train.shape[0], img_width, img_height, 1)
-  X_test = X_test.reshape(X_test.shape[0], img_width, img_height, 1)
+    # reshape input data
+    X_train = X_train.reshape(X_train.shape[0], img_width, img_height, 1)
+    X_test = X_test.reshape(X_test.shape[0], img_width, img_height, 1)
 
-  # one hot encode outputs
-  y_train = np_utils.to_categorical(y_train)
-  y_test = np_utils.to_categorical(y_test)
-  num_classes = y_test.shape[1]
+    # one hot encode outputs
+    y_train = np_utils.to_categorical(y_train)
+    y_test = np_utils.to_categorical(y_test)
+    num_classes = y_test.shape[1]
 
-  # build model
-  model = Sequential()
-  model.add(Conv2D(args.layer_1_size, (5, 5), activation='relu',
-                            input_shape=(img_width, img_height,1)))
-  model.add(MaxPooling2D(pool_size=(2, 2)))
-  model.add(Conv2D(args.layer_2_size, (5, 5), activation='relu'))
-  model.add(MaxPooling2D(pool_size=(2, 2)))
-  model.add(Dropout(args.dropout))
-  model.add(Flatten())
-  model.add(Dense(args.hidden_layer_size, activation='relu'))
-  model.add(Dense(num_classes, activation='softmax'))
+    # build model
+    model = Sequential()
+    model.add(Conv2D(args.layer_1_size, (5, 5), activation='relu',
+                     input_shape=(img_width, img_height, 1)))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Conv2D(args.layer_2_size, (5, 5), activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(args.dropout))
+    model.add(Flatten())
+    model.add(Dense(args.hidden_layer_size, activation='relu'))
+    model.add(Dense(num_classes, activation='softmax'))
 
-  sgd = SGD(lr=args.learning_rate, decay=args.decay, momentum=args.momentum,
-                            nesterov=True)
+    sgd = SGD(lr=args.learning_rate, decay=args.decay, momentum=args.momentum,
+              nesterov=True)
 
-  # enable logging for validation examples
-  val_generator = ImageDataGenerator()
-  model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
-  model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=args.epochs,
-    callbacks=[WandbCallback(data_type="image", labels=labels, generator=val_generator.flow(X_test, y_test, batch_size=32))])
+    # enable logging for validation examples
+    val_generator = ImageDataGenerator()
+    model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
+    model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=args.epochs,
+              callbacks=[WandbCallback(data_type="image", labels=labels, generator=val_generator.flow(X_test, y_test, batch_size=32))])
 
-  # save trained model
-  # model.save(args.model_name + ".h5")
+    # save trained model
+    # model.save(args.model_name + ".h5")
+
 
 if __name__ == "__main__":
-  parser = argparse.ArgumentParser()
-  parser.add_argument(
-    "-m",
-    "--model_name",
-    type=str,
-    default=MODEL_NAME,
-    help="Name of this model/run (model will be saved to this file)")
-  parser.add_argument(
-    "-p",
-    "--project_name",
-    type=str,
-    default=PROJECT_NAME,
-    help="Main project name")
-  parser.add_argument(
-    "-b",
-    "--batch_size",
-    type=int,
-    default=BATCH_SIZE,
-    help="batch_size")
-  parser.add_argument(
-    "--dropout",
-    type=float,
-    default=DROPOUT,
-    help="dropout before dense layers")
-  parser.add_argument(
-    "-e",
-    "--epochs",
-    type=int,
-    default=EPOCHS,
-    help="number of training epochs (passes through full training data)")
-  parser.add_argument(
-    "--hidden_layer_size",
-    type=int,
-    default=HIDDEN_LAYER_SIZE,
-    help="hidden layer size")
-  parser.add_argument(
-    "-l1",
-    "--layer_1_size",
-    type=int,
-    default=L1_SIZE,
-    help="layer 1 size")
-  parser.add_argument(
-    "-l2",
-    "--layer_2_size",
-    type=int,
-    default=L2_SIZE,
-    help="layer 2 size")
-  parser.add_argument(
-    "-lr",
-    "--learning_rate",
-    type=float,
-    default=LEARNING_RATE,
-    help="learning rate")
-  parser.add_argument(
-    "--decay",
-    type=float,
-    default=DECAY,
-    help="learning rate decay")
-  parser.add_argument(
-    "--momentum",
-    type=float,
-    default=MOMENTUM,
-    help="learning rate momentum")
-  parser.add_argument(
-    "-q",
-    "--dry_run",
-    action="store_true",
-    help="Dry run (do not log to wandb)")  
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-m",
+        "--model_name",
+        type=str,
+        default=MODEL_NAME,
+        help="Name of this model/run (model will be saved to this file)")
+    parser.add_argument(
+        "-p",
+        "--project_name",
+        type=str,
+        default=PROJECT_NAME,
+        help="Main project name")
+    parser.add_argument(
+        "-b",
+        "--batch_size",
+        type=int,
+        default=BATCH_SIZE,
+        help="batch_size")
+    parser.add_argument(
+        "--dropout",
+        type=float,
+        default=DROPOUT,
+        help="dropout before dense layers")
+    parser.add_argument(
+        "-e",
+        "--epochs",
+        type=int,
+        default=EPOCHS,
+        help="number of training epochs (passes through full training data)")
+    parser.add_argument(
+        "--hidden_layer_size",
+        type=int,
+        default=HIDDEN_LAYER_SIZE,
+        help="hidden layer size")
+    parser.add_argument(
+        "-l1",
+        "--layer_1_size",
+        type=int,
+        default=L1_SIZE,
+        help="layer 1 size")
+    parser.add_argument(
+        "-l2",
+        "--layer_2_size",
+        type=int,
+        default=L2_SIZE,
+        help="layer 2 size")
+    parser.add_argument(
+        "-lr",
+        "--learning_rate",
+        type=float,
+        default=LEARNING_RATE,
+        help="learning rate")
+    parser.add_argument(
+        "--decay",
+        type=float,
+        default=DECAY,
+        help="learning rate decay")
+    parser.add_argument(
+        "--momentum",
+        type=float,
+        default=MOMENTUM,
+        help="learning rate momentum")
+    parser.add_argument(
+        "-q",
+        "--dry_run",
+        action="store_true",
+        help="Dry run (do not log to wandb)")
 
-  args = parser.parse_args()
+    args = parser.parse_args()
 
-  # easier testing--don't log to wandb if dry run is set
-  if args.dry_run:
-    os.environ['WANDB_MODE'] = 'dryrun'
+    # easier testing--don't log to wandb if dry run is set
+    if args.dry_run:
+        os.environ['WANDB_MODE'] = 'dryrun'
 
-  # create run name
-  if not args.model_name:
-    print("warning: no run name provided")
-  else:
-    os.environ['WANDB_DESCRIPTION'] = args.model_name
- 
-  train_cnn(args)
+    # create run name
+    if not args.model_name:
+        print("warning: no run name provided")
+    else:
+        os.environ['WANDB_NOTES'] = args.model_name
 
+    train_cnn(args)
