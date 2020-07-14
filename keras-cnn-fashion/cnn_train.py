@@ -12,6 +12,8 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Dense, Flatten
 from tensorflow.keras.optimizers import SGD
 from keras.utils import np_utils
+import scikitplot
+
 # TODO: incorporate Tensorboard
 from keras.callbacks import TensorBoard
 
@@ -36,6 +38,14 @@ MOMENTUM = 0.9
 img_width=28
 img_height=28
 
+class ExtraPlots(keras.callbacks.Callback):
+  def __init__(self, X, y):
+    self.X = X
+    self.y = y
+
+  def on_epoch_end(self, epoch, logs={}):
+    pred = 
+
 
 def train_cnn(args):
     # initialize wandb logging to your project
@@ -45,6 +55,8 @@ def train_cnn(args):
 
     # load and prepare data
     (X_train, y_train), (X_test, y_test) = fashion_mnist.load_data()
+    X_train = X_train[:1000]
+    y_train = y_train[:1000]
     labels=["T-shirt/top", "Trouser", "Pullover", "Dress", "Coat",
             "Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot"]
 
@@ -81,7 +93,7 @@ def train_cnn(args):
     val_generator = ImageDataGenerator()
     model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
     model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=args.epochs,
-              callbacks=[WandbCallback(data_type="image", labels=labels, generator=val_generator.flow(X_test, y_test, batch_size=32))])
+              callbacks=[WandbCallback(data_type="image", labels=labels, generator=val_generator.flow(X_test, y_test, batch_size=32)), ExtraPlots(X_test, y_test)])
 
     # save trained model
     # model.save(args.model_name + ".h5")
@@ -162,11 +174,5 @@ if __name__ == "__main__":
     # easier testing--don't log to wandb if dry run is set
     if args.dry_run:
         os.environ['WANDB_MODE'] = 'dryrun'
-
-    # create run name
-    if not args.model_name:
-        print("warning: no run name provided")
-    else:
-        os.environ['WANDB_NOTES'] = args.model_name
 
     train_cnn(args)

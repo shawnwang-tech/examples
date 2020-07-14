@@ -41,4 +41,4 @@ bst = xgb.train(param, xg_train, num_round, watchlist, callbacks=[wandb.xgboost.
 pred = bst.predict(xg_test)
 error_rate = np.sum(pred != test_Y) / test_Y.shape[0]
 print('Test error using softmax = {}'.format(error_rate))
-wandb.summary['Error Rate'] = error_rate
+#wandb.summary['Error Rate'] = error_rate

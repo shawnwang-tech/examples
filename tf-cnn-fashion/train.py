@@ -9,9 +9,10 @@ This code was adapted from https://github.com/aymericdamien/TensorFlow-Examples/
 """
 
 from tensorflow.examples.tutorials.mnist import input_data
-import tensorflow as tf
+#import tensorflow as tf
 import wandb
-
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 def main():
     wandb.init()
