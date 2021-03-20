@@ -14,8 +14,6 @@ parser.add_argument('--max-jobs', type=int, default=3,
                     help='Maximum jobs')
 parser.add_argument('--max-parallel-jobs', type=int, default=3,
                     help='Maximum parallel jobs')
-parser.add_argument('--train-epochs', type=int, default=50,
-                    help='Train number of epochs')
 parser.add_argument('--wait', dest='wait', action='store_true')
 parser.add_argument('--no-wait', dest='wait', action='store_false')
 parser.set_defaults(wait=True)
@@ -55,7 +53,7 @@ estimator = PyTorch(entry_point="cifar10.py",
                     instance_count=1,
                     instance_type='ml.c5.xlarge',
                     hyperparameters={
-                        'epochs': args.train_epochs,
+                        'epochs': 50,
                         'momentum': 0.9
                     })
 
