@@ -34,8 +34,8 @@ def accuracy(loss):
 
 def main():
     args = parser.parse_args()
-    wandb.init()
-    wandb.config.update(args)
+    wandb.init(id='@@@pythonrunid', resume='must')
+    wandb.config.update(args, allow_val_change=True)
 
     for i in range(args.start_epoch, args.start_epoch + args.num_epochs):
         print('Step', i)

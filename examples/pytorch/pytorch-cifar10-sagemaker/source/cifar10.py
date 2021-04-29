@@ -6,7 +6,9 @@ import os
 import json
 
 
-wandb.init(project="sm-pytorch-cifar")
+# wandb.init(project="sm-pytorch-cifar", settings=wandb.Settings(sagemaker_disable="true"), id='asdf', resume='must')
+wandb.init(project="sm-pytorch-cifar", id='asdf', resume='must')
+
 
 config = wandb.config
 # Set defaults if we dont have values from SageMaker
