@@ -57,29 +57,29 @@ estimator = PyTorch(entry_point="cifar10.py",
                         'momentum': 0.9
                     })
 
-hyperparameter_ranges = {
-    'lr': ContinuousParameter(0.0001, 0.001),
-    'hidden_nodes': IntegerParameter(20, 100),
-    'batch_size': CategoricalParameter([128, 256, 512]),
-    'conv1_channels': CategoricalParameter([32, 64, 128]),
-    'conv2_channels': CategoricalParameter([64, 128, 256, 512]),
-}
+# hyperparameter_ranges = {
+#     'lr': ContinuousParameter(0.0001, 0.001),
+#     'hidden_nodes': IntegerParameter(20, 100),
+#     'batch_size': CategoricalParameter([128, 256, 512]),
+#     'conv1_channels': CategoricalParameter([32, 64, 128]),
+#     'conv2_channels': CategoricalParameter([64, 128, 256, 512]),
+# }
 
-objective_metric_name = 'average test accuracy'
-objective_type = 'Maximize'
-metric_definitions = [{'Name': 'average test accuracy',
-                       'Regex': 'Test Accuracy: ([0-9\\.]+)'}]
+# objective_metric_name = 'average test accuracy'
+# objective_type = 'Maximize'
+# metric_definitions = [{'Name': 'average test accuracy',
+#                        'Regex': 'Test Accuracy: ([0-9\\.]+)'}]
 
-tuner = HyperparameterTuner(estimator,
-                            objective_metric_name,
-                            hyperparameter_ranges,
-                            metric_definitions,
-                            max_jobs=args.max_jobs,
-                            max_parallel_jobs=args.max_parallel_jobs,
-                            objective_type=objective_type)
+# tuner = HyperparameterTuner(estimator,
+#                             objective_metric_name,
+#                             hyperparameter_ranges,
+#                             metric_definitions,
+#                             max_jobs=args.max_jobs,
+#                             max_parallel_jobs=args.max_parallel_jobs,
+#                             objective_type=objective_type)
 
-tuner.fit({'training': inputs})
+# tuner.fit({'training': inputs})
 
-if args.wait:
-    print("Waiting for sweep to finish")
-    tuner.wait()
+# if args.wait:
+#     print("Waiting for sweep to finish")
+#     tuner.wait()
